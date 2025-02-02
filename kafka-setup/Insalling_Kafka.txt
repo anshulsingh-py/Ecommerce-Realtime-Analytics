@@ -1,0 +1,44 @@
+
+# Update system packages
+sudo dnf update -y
+
+# Install Java 17 (Amazon Corretto)
+
+sudo dnf install -y java-17-amazon-corretto-devel
+
+wget https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
+
+tar -xzf kafka_2.13-3.9.0.tgz
+
+cd kafka_2.13-3.9.0
+
+Generate a cluster ID:
+KAFKA_CLUSTER_ID="$(bin/kafka-storage.sh random-uuid)"
+
+Format the storage directories:
+bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c config/kraft/server.properties
+
+Edit the KRaft configuration file:
+vim config/kraft/server.properties
+
+Update these settings:
+properties
+
+# Node ID (unique for each broker)
+node.id=1
+
+# Controller quorum voters (for multi-broker clusters)
+controller.quorum.voters=1@localhost:9093
+
+# Listeners
+listeners=PLAINTEXT://:9092,CONTROLLER://:9093
+
+# Advertised listeners (use your EC2 public IP if running on AWS)
+advertised.listeners=PLAINTEXT://localhost:9092
+
+# Log directories
+log.dirs=/tmp/kraft-combined-logs
+Step 3: Start Kafka in KRaft Mode
+
+Start server:
+bin/kafka-server-start.sh config/kraft/server.properties

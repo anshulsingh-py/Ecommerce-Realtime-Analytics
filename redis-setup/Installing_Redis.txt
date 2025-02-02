@@ -1,0 +1,17 @@
+#Install redis6
+sudo dnf install -y redis6
+
+# Change the config to listen from your computer
+sudo vim /etc/redis6/redis6.conf
+
+requirepass your_password # For Authencation 
+
+sudo systemctl start redis6
+
+sudo systemctl enable redis6
+
+sudo systemctl is-enabled redis6
+
+redis6-server --version
+
+redis6-cli ping
